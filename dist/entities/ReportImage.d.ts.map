@@ -1,0 +1,1 @@
+{"version":3,"file":"ReportImage.d.ts","sourceRoot":"","sources":["../../src/entities/ReportImage.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,MAAM,EAAE,MAAM,UAAU,CAAC;AAElC,qBACa,WAAW;IAEtB,OAAO,EAAG,MAAM,CAAC;IAGjB,QAAQ,EAAG,MAAM,GAAG,IAAI,CAAC;IAGzB,QAAQ,EAAG,MAAM,GAAG,IAAI,CAAC;IAGzB,UAAU,EAAG,IAAI,CAAC;IAIlB,MAAM,EAAG,MAAM,GAAG,IAAI,CAAC;CACxB"}
