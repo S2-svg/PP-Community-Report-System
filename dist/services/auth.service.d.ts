@@ -1,0 +1,131 @@
+import { ChangePasswordInput, LoginInput, RegisterInput, UpdateProfileInput, UpdateRoleInput } from "../interfaces/auth.interface";
+export declare class AuthService {
+    private readonly users;
+    register(input: RegisterInput): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }>;
+    login(input: LoginInput): Promise<{
+        token: string;
+        user: {
+            userId: number;
+            fullName: string | null;
+            username: string | null;
+            email: string | null;
+            phoneNumber: string | null;
+            profileImage: string | null;
+            gender: string | null;
+            dateOfBirth: string | null;
+            address: string | null;
+            bio: string | null;
+            role: import("../entities/User").UserRole;
+            createdAt: Date;
+            updatedAt: Date;
+            reports: import("../entities/Report").Report[];
+            notifications: import("../entities/Notification").Notification[];
+        };
+    }>;
+    getProfile(userId: number): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }>;
+    updateProfile(userId: number, input: UpdateProfileInput): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }>;
+    changePassword(userId: number, input: ChangePasswordInput): Promise<{
+        changed: boolean;
+    }>;
+    getAllUsers(): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }[]>;
+    updateRole(userId: number, input: UpdateRoleInput): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }>;
+    deleteUser(userId: number): Promise<{
+        userId: number;
+        fullName: string | null;
+        username: string | null;
+        email: string | null;
+        phoneNumber: string | null;
+        profileImage: string | null;
+        gender: string | null;
+        dateOfBirth: string | null;
+        address: string | null;
+        bio: string | null;
+        role: import("../entities/User").UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+        reports: import("../entities/Report").Report[];
+        notifications: import("../entities/Notification").Notification[];
+    }>;
+    private findUser;
+}
+//# sourceMappingURL=auth.service.d.ts.map
