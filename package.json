@@ -4,15 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
-    "test": "echo \"Error: no test specified\" && exit 1"
-    
-=======
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "npm run build"
->>>>>>> feature/savin
   },
   "repository": {
     "type": "git",
@@ -21,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/S2-svg/PP-Community-Report-System/issues"
   },

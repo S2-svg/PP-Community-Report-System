@@ -5,8 +5,6 @@ import {
   ChangePasswordInput,
   LoginInput,
   RegisterInput,
-  UpdateProfileInput,
-  UpdateRoleInput,
 } from "../interfaces/auth.interface";
 import { UserRepository } from "../repositories/user.repository";
 import { generateToken } from "../utils/generateToken";
@@ -72,19 +70,6 @@ export class AuthService {
     return { token, user: publicUser(user) };
   }
 
-  async getProfile(userId: number) {
-    return publicUser(await this.findUser(userId));
-  }
-
-  async updateProfile(userId: number, input: UpdateProfileInput) {
-    const user = await this.users.update({ userId }, input);
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
-  }
-
   async changePassword(userId: number, input: ChangePasswordInput) {
     if (!input.currentPassword || !input.newPassword) {
       throw new AppError(400, "Current password and new password are required");
@@ -97,33 +82,6 @@ export class AuthService {
 
     await this.users.update({ userId }, { password: await bcrypt.hash(input.newPassword, 10) });
     return { changed: true };
-  }
-
-  async getAllUsers() {
-    const users = await this.users.findAll({ order: { createdAt: "DESC" } });
-    return users.map(publicUser);
-  }
-
-  async updateRole(userId: number, input: UpdateRoleInput) {
-    if (!["Citizen", "Admin"].includes(input.role)) {
-      throw new AppError(400, "Role must be Citizen or Admin");
-    }
-
-    const user = await this.users.update({ userId }, { role: input.role });
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
-  }
-
-  async deleteUser(userId: number) {
-    const user = await this.users.delete({ userId });
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
   }
 
   private async findUser(userId: number) {

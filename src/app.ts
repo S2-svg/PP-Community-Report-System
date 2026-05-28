@@ -1,22 +1,6 @@
-<<<<<<< HEAD
-import express from 'express';
-
-const app = express();
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Basic route for testing
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-
-export default app;
-=======
 import express from "express";
 import cors from "cors";
 import path from "path";
-import adminRoutes from "./routes/admin.routes";
 import authRoutes from "./routes/auth.routes";
 import categoryRoutes from "./routes/category.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
@@ -36,7 +20,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/reports", reportRoutes);
@@ -45,4 +28,3 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use(errorMiddleware);
 
 export default app;
->>>>>>> feature/savin
