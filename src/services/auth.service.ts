@@ -8,6 +8,7 @@ import {
 } from "../interfaces/auth.interface";
 import { UserRepository } from "../repositories/user.repository";
 import { generateToken } from "../utils/generateToken";
+import { isValidEmail, isValidPassword, normalizeEmail } from "../utils/validators";
 
 const publicUser = (user: User) => {
   const { password, ...safeUser } = user;
@@ -22,7 +23,21 @@ export class AuthService {
       throw new AppError(400, "Full name, email, and password are required");
     }
 
-    const existingEmail = await this.users.findByEmail(input.email);
+    // Validate email format
+    if (!isValidEmail(input.email)) {
+      throw new AppError(400, "Invalid email format");
+    }
+
+    // Validate password strength
+    const passwordValidation = isValidPassword(input.password);
+    if (!passwordValidation.isValid) {
+      throw new AppError(400, passwordValidation.reason || "Password does not meet security requirements");
+    }
+
+    // Normalize email to lowercase for consistency
+    const normalizedEmail = normalizeEmail(input.email);
+
+    const existingEmail = await this.users.findByEmail(normalizedEmail);
     if (existingEmail) {
       throw new AppError(409, "Email is already registered");
     }
@@ -37,7 +52,7 @@ export class AuthService {
     const user = await this.users.create({
       fullName: input.fullName,
       username: input.username ?? null,
-      email: input.email,
+      email: normalizedEmail,
       password: await bcrypt.hash(input.password, 10),
       phoneNumber: input.phoneNumber ?? null,
       role: "Citizen",
