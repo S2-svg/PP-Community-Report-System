@@ -32,6 +32,12 @@ export class TempUser {
   @Column({ type: "boolean", default: false })
   isVerified!: boolean;
 
+  @Column({ type: "int", default: 0 })
+  failedAttempts!: number;
+
+  @Column({ type: "datetime", nullable: true })
+  lastResendAt!: Date | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

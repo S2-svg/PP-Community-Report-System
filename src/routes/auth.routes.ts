@@ -1,13 +1,25 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
+// import { AuthVerificationController } from "../controllers/auth-verification.controller";
 import { asyncHandler } from "../middlewares/error.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
-import { registerValidationRules, validate } from "../utils/validationRules";
+import {
+  registerValidationRules,
+  otpVerificationRules,
+  resendOtpRules,
+  validate,
+} from "../utils/validationRules";
 
 const router = Router();
 const controller = new AuthController();
+// const verificationController = new AuthVerificationController();
 
-router.post("/register", registerValidationRules(), validate, asyncHandler(controller.register));
+// Registration flow with email verification
+router.post("/register-step1", registerValidationRules(), validate, asyncHandler(controller.registerStep1));
+router.post("/verify-otp", otpVerificationRules(), validate, asyncHandler(controller.verifyOTP));
+router.post("/resend-otp", resendOtpRules(), validate, asyncHandler(controller.resendOTP));
+
+// Login and password management
 router.post("/login", asyncHandler(controller.login));
 router.patch("/change-password", authenticate, asyncHandler(controller.changePassword));
 
