@@ -1,5 +1,5 @@
 import { User } from "../entities/User";
-import { BaseRepository } from "./abstract/base.repository";
+import { BaseRepository } from "../abstract/base.repository";
 
 export class UserRepository extends BaseRepository<User> {
   constructor() {

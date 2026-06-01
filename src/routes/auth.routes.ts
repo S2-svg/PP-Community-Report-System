@@ -1,21 +1,26 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
+// import { AuthVerificationController } from "../controllers/auth-verification.controller";
 import { asyncHandler } from "../middlewares/error.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
-import { authorize } from "../middlewares/role.middleware";
+import {
+  registerValidationRules,
+  otpVerificationRules,
+  resendOtpRules,
+  validate,
+} from "../utils/validationRules";
 
 const router = Router();
 const controller = new AuthController();
+// const verificationController = new AuthVerificationController();
 
-router.post("/register", asyncHandler(controller.register));
+// Registration flow with email verification
+router.post("/register-step1", registerValidationRules(), validate, asyncHandler(controller.registerStep1));
+router.post("/verify-otp", otpVerificationRules(), validate, asyncHandler(controller.verifyOTP));
+router.post("/resend-otp", resendOtpRules(), validate, asyncHandler(controller.resendOTP));
+
+// Login and password management
 router.post("/login", asyncHandler(controller.login));
-router.get("/profile", authenticate, asyncHandler(controller.profile));
-router.patch("/profile", authenticate, asyncHandler(controller.updateProfile));
-router.patch("/changepassword", authenticate, asyncHandler(controller.changePassword));
 router.patch("/change-password", authenticate, asyncHandler(controller.changePassword));
-
-router.get("/users", authenticate, authorize("Admin"), asyncHandler(controller.users));
-router.delete("/users/:id", authenticate, authorize("Admin"), asyncHandler(controller.deleteUser));
-router.patch("/users/:id/role", authenticate, authorize("Admin"), asyncHandler(controller.updateRole));
 
 export default router;

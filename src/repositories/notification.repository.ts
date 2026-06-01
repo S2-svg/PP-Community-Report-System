@@ -1,5 +1,5 @@
 import { Notification } from "../entities/Notification";
-import { BaseRepository } from "./abstract/base.repository";
+import { BaseRepository } from "../abstract/base.repository";
 
 export class NotificationRepository extends BaseRepository<Notification> {
   constructor() {

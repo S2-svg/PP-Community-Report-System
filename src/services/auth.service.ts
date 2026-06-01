@@ -4,12 +4,11 @@ import { User } from "../entities/User";
 import {
   ChangePasswordInput,
   LoginInput,
-  RegisterInput,
-  UpdateProfileInput,
-  UpdateRoleInput,
 } from "../interfaces/auth.interface";
 import { UserRepository } from "../repositories/user.repository";
+import { TempUserRepository } from "../repositories/temp-user.repository";
 import { generateToken } from "../utils/generateToken";
+import { normalizeEmail } from "../utils/validators";
 
 const publicUser = (user: User) => {
   const { password, ...safeUser } = user;
@@ -18,35 +17,7 @@ const publicUser = (user: User) => {
 
 export class AuthService {
   private readonly users = new UserRepository();
-
-  async register(input: RegisterInput) {
-    if (!input.fullName || !input.email || !input.password) {
-      throw new AppError(400, "Full name, email, and password are required");
-    }
-
-    const existingEmail = await this.users.findByEmail(input.email);
-    if (existingEmail) {
-      throw new AppError(409, "Email is already registered");
-    }
-
-    if (input.username) {
-      const existingUsername = await this.users.findByUsername(input.username);
-      if (existingUsername) {
-        throw new AppError(409, "Username is already taken");
-      }
-    }
-
-    const user = await this.users.create({
-      fullName: input.fullName,
-      username: input.username ?? null,
-      email: input.email,
-      password: await bcrypt.hash(input.password, 10),
-      phoneNumber: input.phoneNumber ?? null,
-      role: "Citizen",
-    });
-
-    return publicUser(user);
-  }
+  private readonly tempUsers = new TempUserRepository();
 
   async login(input: LoginInput) {
     if (!input.email || !input.password) {
@@ -72,19 +43,6 @@ export class AuthService {
     return { token, user: publicUser(user) };
   }
 
-  async getProfile(userId: number) {
-    return publicUser(await this.findUser(userId));
-  }
-
-  async updateProfile(userId: number, input: UpdateProfileInput) {
-    const user = await this.users.update({ userId }, input);
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
-  }
-
   async changePassword(userId: number, input: ChangePasswordInput) {
     if (!input.currentPassword || !input.newPassword) {
       throw new AppError(400, "Current password and new password are required");
@@ -99,38 +57,54 @@ export class AuthService {
     return { changed: true };
   }
 
-  async getAllUsers() {
-    const users = await this.users.findAll({ order: { createdAt: "DESC" } });
-    return users.map(publicUser);
-  }
-
-  async updateRole(userId: number, input: UpdateRoleInput) {
-    if (!["Citizen", "Admin"].includes(input.role)) {
-      throw new AppError(400, "Role must be Citizen or Admin");
-    }
-
-    const user = await this.users.update({ userId }, { role: input.role });
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
-  }
-
-  async deleteUser(userId: number) {
-    const user = await this.users.delete({ userId });
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    return publicUser(user);
-  }
-
   private async findUser(userId: number) {
     const user = await this.users.findById({ userId });
     if (!user) {
       throw new AppError(404, "User not found");
     }
+
+    return user;
+  }
+
+  /**
+   * Create account from verified temporary user record
+   * Moves user from temp_users to users table
+   */
+  async createAccountFromTempUser(tempUserId: number): Promise<User> {
+    // Get temp user record
+    const tempUser = await this.tempUsers.findById(tempUserId);
+    if (!tempUser) {
+      throw new AppError(404, "Registration session not found");
+    }
+
+    // Check if email already exists in users table
+    const existingUser = await this.users.findByEmail(tempUser.email);
+    if (existingUser) {
+      // Clean up temp user record
+      await this.tempUsers.delete(tempUserId);
+      throw new AppError(409, "Email is already registered");
+    }
+
+    // Check if username exists (if provided)
+    if (tempUser.username && tempUser.username.trim()) {
+      const existingUsername = await this.users.findByUsername(tempUser.username);
+      if (existingUsername) {
+        throw new AppError(409, "Username is already taken");
+      }
+    }
+
+    // Create user in users table
+    const user = await this.users.create({
+      fullName: tempUser.fullName,
+      username: tempUser.username && tempUser.username.trim() ? tempUser.username : null,
+      email: normalizeEmail(tempUser.email),
+      password: tempUser.password,
+      phoneNumber: null,
+      role: "Citizen",
+    });
+
+    // Delete temp user record after successful creation
+    await this.tempUsers.delete(tempUserId);
 
     return user;
   }
