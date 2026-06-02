@@ -13,6 +13,7 @@ router.get("/search", authenticate, asyncHandler(controller.search));
 router.get("/users/:userId", authenticate, asyncHandler(controller.findByUser));
 router.get("/categories/:categoryId", authenticate, asyncHandler(controller.findByCategory));
 router.get("/statuses/:status", authenticate, asyncHandler(controller.findByStatus));
+router.get("/:id/timeline", authenticate, asyncHandler(controller.findStatusHistory));
 router.get("/:id", authenticate, asyncHandler(controller.findById));
 
 // CRUD

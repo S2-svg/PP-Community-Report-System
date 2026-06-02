@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Notification } from "./Notification";
 import { Report } from "./Report";
+import { ReportStatusHistory } from "./ReportStatusHistory";
 
 export type UserRole = "Citizen" | "Admin";
 
@@ -60,4 +61,7 @@ export class User {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications!: Notification[];
+
+  @OneToMany(() => ReportStatusHistory, (history) => history.changedBy)
+  reportStatusHistory!: ReportStatusHistory[];
 }

@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Report } from "./Report";
+import { ReportStatusHistory } from "./ReportStatusHistory";
 
 @Entity("status")
 export class Status {
@@ -11,4 +12,10 @@ export class Status {
 
   @OneToMany(() => Report, (report) => report.status)
   reports!: Report[];
+
+  @OneToMany(() => ReportStatusHistory, (history) => history.previousStatus)
+  previousStatusHistory!: ReportStatusHistory[];
+
+  @OneToMany(() => ReportStatusHistory, (history) => history.newStatus)
+  newStatusHistory!: ReportStatusHistory[];
 }

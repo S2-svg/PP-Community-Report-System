@@ -1,5 +1,6 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth.middleware";
+import { UpdateReportStatusInput } from "../interfaces/report.interface";
 import { ReportService } from "../services/report.service";
 import { sendSuccess } from "../utils/responseHandler";
 
@@ -39,9 +40,16 @@ export class ReportController {
   };
 
   updateStatus = async (req: AuthenticatedRequest, res: Response) => {
-    const report = await service.updateStatus(Number(req.params.id), {
+    const input: UpdateReportStatusInput = {
       statusId: Number(req.body.statusId),
-    });
+      changedByUserId: req.user!.userId,
+    };
+
+    if (req.body.note !== undefined) {
+      input.note = String(req.body.note);
+    }
+
+    const report = await service.updateStatus(Number(req.params.id), input);
     return sendSuccess(res, 200, "Report status updated successfully", report);
   };
 
@@ -63,6 +71,11 @@ export class ReportController {
   findByStatus = async (req: AuthenticatedRequest, res: Response) => {
     const reports = await service.findByStatus(String(req.params.status));
     return sendSuccess(res, 200, "Status reports retrieved successfully", reports);
+  };
+
+  findStatusHistory = async (req: AuthenticatedRequest, res: Response) => {
+    const history = await service.findStatusHistory(Number(req.params.id));
+    return sendSuccess(res, 200, "Report status timeline retrieved successfully", history);
   };
 
   search = async (req: AuthenticatedRequest, res: Response) => {

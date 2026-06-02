@@ -16,4 +16,6 @@ export interface UpdateReportInput {
 
 export interface UpdateReportStatusInput {
   statusId: number;
+  changedByUserId: number;
+  note?: string;
 }
