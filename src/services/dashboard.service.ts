@@ -30,6 +30,28 @@ export class DashboardService {
     };
   }
 
+  async userSummary() {
+    const userRepo = AppDataSource.getRepository(User);
+
+    const [totalUsers, roleRows] = await Promise.all([
+      userRepo.count(),
+      userRepo
+        .createQueryBuilder("user")
+        .select("user.role", "role")
+        .addSelect("COUNT(user.userId)", "count")
+        .groupBy("user.role")
+        .getRawMany<{ role: string; count: string }>(),
+    ]);
+
+    return {
+      totalUsers,
+      byRole: roleRows.map((row) => ({
+        role: row.role,
+        count: Number(row.count),
+      })),
+    };
+  }
+
   async categorySummary() {
     return AppDataSource.getRepository(Category)
       .createQueryBuilder("category")

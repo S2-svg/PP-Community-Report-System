@@ -8,6 +8,7 @@ const router = Router();
 const controller = new DashboardController();
 
 router.get("/report-summary", authenticate, authorize("Admin"), asyncHandler(controller.reportSummary));
+router.get("/user-summary", authenticate, authorize("Admin"), asyncHandler(controller.userSummary));
 router.get("/category-summary", authenticate, authorize("Admin"), asyncHandler(controller.categorySummary));
 
 export default router;
