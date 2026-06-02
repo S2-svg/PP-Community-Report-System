@@ -1,12 +1,17 @@
 import { AppDataSource } from "../config/data-source";
+import { Notification } from "../entities/Notification";
 import { Report } from "../entities/Report";
 import { ReportImage } from "../entities/ReportImage";
+import { ReportStatusHistory } from "../entities/ReportStatusHistory";
+import { Status } from "../entities/Status";
 import { AppError } from "../middlewares/error.middleware";
 import { CreateReportInput, UpdateReportInput, UpdateReportStatusInput } from "../interfaces/report.interface";
+import { ReportStatusHistoryRepository } from "../repositories/report-status-history.repository";
 import { ReportRepository } from "../repositories/report.repository";
 
 export class ReportService {
   private readonly reports = new ReportRepository();
+  private readonly statusHistory = new ReportStatusHistoryRepository();
 
   findAll() {
     return this.reports.findAllWithRelations();
@@ -69,9 +74,59 @@ export class ReportService {
       throw new AppError(400, "Status ID is required");
     }
 
+    const updatedReportId = await AppDataSource.transaction(async (manager) => {
+      const report = await manager.findOne(Report, {
+        where: { reportId },
+        relations: { status: true },
+      });
+
+      if (!report) {
+        throw new AppError(404, "Report not found");
+      }
+
+      const newStatus = await manager.findOne(Status, {
+        where: { statusId: input.statusId },
+      });
+
+      if (!newStatus) {
+        throw new AppError(400, "Status not found");
+      }
+
+      const note = input.note?.trim() || null;
+
+      await manager.update(Report, { reportId }, { statusId: input.statusId });
+      await manager.save(
+        manager.create(ReportStatusHistory, {
+          reportId,
+          previousStatusId: report.statusId,
+          newStatusId: input.statusId,
+          changedByUserId: input.changedByUserId,
+          note,
+        }),
+      );
+
+      if (report.userId) {
+        const statusName = newStatus.statusName ?? `status #${newStatus.statusId}`;
+        const title = report.title ? `"${report.title}"` : `#${report.reportId}`;
+
+        await manager.save(
+          manager.create(Notification, {
+            userId: report.userId,
+            reportId,
+            message: `Your report ${title} status changed to ${statusName}.`,
+          }),
+        );
+      }
+
+      return reportId;
+    });
+
+    return this.findById(updatedReportId);
+  }
+
+  async findStatusHistory(reportId: number) {
     await this.findById(reportId);
-    await this.reports.update({ reportId }, { statusId: input.statusId });
-    return this.findById(reportId);
+    return this.statusHistory.findByReport(reportId);
   }
 
   async delete(reportId: number) {

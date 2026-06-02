@@ -11,6 +11,7 @@ import {
 import { Category } from "./Category";
 import { Notification } from "./Notification";
 import { ReportImage } from "./ReportImage";
+import { ReportStatusHistory } from "./ReportStatusHistory";
 import { Status } from "./Status";
 import { User } from "./User";
 
@@ -60,4 +61,7 @@ export class Report {
 
   @OneToMany(() => Notification, (notification) => notification.report)
   notifications!: Notification[];
+
+  @OneToMany(() => ReportStatusHistory, (history) => history.report)
+  statusHistory!: ReportStatusHistory[];
 }
