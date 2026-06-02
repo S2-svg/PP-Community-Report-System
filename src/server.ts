@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import app from './app.ts';
-import dotenv from 'dotenv';
-dotenv.config();
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-=======
 import app from "./app";
 import { AppDataSource } from "./config/data-source";
 
@@ -23,4 +13,3 @@ AppDataSource.initialize()
     console.error("Database connection failed", error);
     process.exit(1);
   });
->>>>>>> feature/savin

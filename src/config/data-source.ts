@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'test',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
-
-export default pool;
-=======
 import "reflect-metadata";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
@@ -33,11 +14,10 @@ export const AppDataSource = new DataSource({
   type: "mysql",
   host: process.env.DB_HOST ?? "localhost",
   port: Number(process.env.DB_PORT ?? 3306),
-  username: process.env.DB_USERNAME ?? "root",
+  username: process.env.DB_USERNAME ?? process.env.DB_USER ?? "root",
   password: process.env.DB_PASSWORD ?? "",
-  database: process.env.DB_DATABASE ?? "pp_crs_db",
+  database: process.env.DB_DATABASE ?? process.env.DB_NAME ?? "pp_crs_db",
   synchronize: process.env.DB_SYNC === "true",
   logging: process.env.DB_LOGGING === "true",
   entities: [User, Category, Status, Report, ReportImage, Notification],
 });
->>>>>>> feature/savin

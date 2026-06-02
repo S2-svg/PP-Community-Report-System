@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportService = void 0;
 const data_source_1 = require("../config/data-source");
+const Report_1 = require("../entities/Report");
 const ReportImage_1 = require("../entities/ReportImage");
 const error_middleware_1 = require("../middlewares/error.middleware");
 const report_repository_1 = require("../repositories/report.repository");
@@ -23,8 +24,8 @@ class ReportService {
         if (!input.userId || !input.categoryId || !input.title || !input.description || !input.location) {
             throw new error_middleware_1.AppError(400, "User, category, title, description, and location are required");
         }
-        return data_source_1.AppDataSource.transaction(async (manager) => {
-            const report = await manager.save(manager.create("Report", {
+        const reportId = await data_source_1.AppDataSource.transaction(async (manager) => {
+            const report = await manager.save(manager.create(Report_1.Report, {
                 userId: input.userId,
                 categoryId: input.categoryId,
                 statusId: 1,
@@ -40,8 +41,9 @@ class ReportService {
                     imageUrl,
                 })));
             }
-            return this.findById(reportEntity.reportId);
+            return reportEntity.reportId;
         });
+        return this.findById(reportId);
     }
     async update(reportId, input) {
         await this.findById(reportId);

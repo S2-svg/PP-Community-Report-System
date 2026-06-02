@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/data-source";
+import { Report } from "../entities/Report";
 import { ReportImage } from "../entities/ReportImage";
 import { AppError } from "../middlewares/error.middleware";
 import { CreateReportInput, UpdateReportInput, UpdateReportStatusInput } from "../interfaces/report.interface";
@@ -25,9 +26,9 @@ export class ReportService {
       throw new AppError(400, "User, category, title, description, and location are required");
     }
 
-    return AppDataSource.transaction(async (manager) => {
+    const reportId = await AppDataSource.transaction(async (manager) => {
       const report = await manager.save(
-        manager.create("Report", {
+        manager.create(Report, {
           userId: input.userId,
           categoryId: input.categoryId,
           statusId: 1,
@@ -51,8 +52,10 @@ export class ReportService {
         );
       }
 
-      return this.findById(reportEntity.reportId);
+      return reportEntity.reportId;
     });
+
+    return this.findById(reportId);
   }
 
   async update(reportId: number, input: UpdateReportInput) {
