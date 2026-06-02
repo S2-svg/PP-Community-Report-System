@@ -22,5 +22,6 @@ router.post("/resend-otp", resendOtpRules(), validate, asyncHandler(controller.r
 // Login and password management
 router.post("/login", asyncHandler(controller.login));
 router.patch("/change-password", authenticate, asyncHandler(controller.changePassword));
+router.post("/logout", authenticate, asyncHandler(controller.logout));
 
 export default router;

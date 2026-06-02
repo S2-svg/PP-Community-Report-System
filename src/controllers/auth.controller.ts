@@ -181,4 +181,10 @@ export class AuthController {
     const result = await authService.changePassword(req.user!.userId, req.body);
     return sendSuccess(res, 200, "Password changed successfully", result);
   };
+
+  logout = async (req: AuthenticatedRequest, res: Response) => {
+    const result = await authService.logout(req.user!.userId);
+    return sendSuccess(res, 200, "Logout successful", result);
+  };
 }
+

@@ -108,4 +108,14 @@ export class AuthService {
 
     return user;
   }
+
+  async logout(userId: number) {
+    // Stateless JWT logout: client should discard token.
+    return {
+      success: true,
+      loggedOut: true,
+      userId,
+      message: "Logout successful. Token should be removed from client (Postman/frontend).",
+    };
+  }
 }
