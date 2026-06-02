@@ -7,6 +7,7 @@ import { Report } from "../entities/Report";
 import { ReportImage } from "../entities/ReportImage";
 import { Status } from "../entities/Status";
 import { User } from "../entities/User";
+import { TempUser } from "../entities/TempUsers";
 
 dotenv.config();
 
@@ -19,5 +20,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE ?? process.env.DB_NAME ?? "pp_crs_db",
   synchronize: process.env.DB_SYNC === "true",
   logging: process.env.DB_LOGGING === "true",
-  entities: [User, Category, Status, Report, ReportImage, Notification],
+  entities: [User, Category, Status, Report, ReportImage, Notification, TempUser],
+  migrations: ["src/database/migrations/*.ts"],
 });

@@ -1,6 +1,6 @@
 import { Like } from "typeorm";
 import { Report } from "../entities/Report";
-import { BaseRepository } from "./abstract/base.repository";
+import { BaseRepository } from "../abstract/base.repository";
 
 const reportRelations = {
   user: true,
