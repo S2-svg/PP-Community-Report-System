@@ -40,6 +40,7 @@ Authorization: Bearer <token>
 | POST   | `/api/auth/resend-otp`      | Public        | Resend OTP for a pending registration.  |
 | POST   | `/api/auth/login`           | Public        | Login and receive a JWT token.          |
 | PATCH  | `/api/auth/change-password` | Authenticated | Change current user's password.         |
+| POST   | `/api/auth/logout`          | Authenticated | Logout current user.                    |
 
 Register body:
 
@@ -192,6 +193,7 @@ Update report status body:
 | Method | Endpoint                          | Access | Description                      |
 | ------ | --------------------------------- | ------ | -------------------------------- |
 | GET    | `/api/dashboard/report-summary`   | Admin  | Get report summary statistics.   |
+| GET    | `/api/dashboard/user-summary`     | Admin  | Get user summary statistics.     |
 | GET    | `/api/dashboard/category-summary` | Admin  | Get category summary statistics. |
 
 ### Static Uploads
