@@ -5,28 +5,14 @@ export class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    const host = process.env.SMTP_HOST || "smtp.gmail.com";
-    // Force port 465 as a default fallback because cloud hosts (Render) block port 587/25 frequently
-    const port = parseInt(process.env.SMTP_PORT || "465");
-    const secure = process.env.SMTP_SECURE === "true" || port === 465;
-
-    // Optional diagnostic log to help you debug on the Render console
-    console.log(
-      `[SMTP Init] Attempting connection to ${host}:${port} (Secure: ${secure})`,
-    );
-
     this.transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
+      host: process.env.SMTP_HOST || "smtp.gmail.com",
+      port: parseInt(process.env.SMTP_PORT || "465"),
+      secure: process.env.SMTP_PORT === "465", // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-      // CRITICAL: Prevent long hanging connections by forcing a fast timeout
-      connectionTimeout: 8000, // 8 seconds
-      greetingTimeout: 8000,
-      socketTimeout: 10000,
     });
   }
 
