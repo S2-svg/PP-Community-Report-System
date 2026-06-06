@@ -35,9 +35,7 @@ Authorization: Bearer <token>
 
 | Method | Endpoint                    | Access        | Description                             |
 | ------ | --------------------------- | ------------- | --------------------------------------- |
-| POST   | `/api/auth/register-step1`  | Public        | Start registration and send OTP email.  |
-| POST   | `/api/auth/verify-otp`      | Public        | Verify OTP and create the user account. |
-| POST   | `/api/auth/resend-otp`      | Public        | Resend OTP for a pending registration.  |
+| POST   | `/api/auth/register         | Public        | Start registration.                     |
 | POST   | `/api/auth/login`           | Public        | Login and receive a JWT token.          |
 | PATCH  | `/api/auth/change-password` | Authenticated | Change current user's password.         |
 | POST   | `/api/auth/logout`          | Authenticated | Logout current user.                    |
