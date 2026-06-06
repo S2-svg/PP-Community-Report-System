@@ -6,9 +6,16 @@ import {
   LoginInput,
 } from "../interfaces/auth.interface";
 import { UserRepository } from "../repositories/user.repository";
-import { TempUserRepository } from "../repositories/temp-user.repository";
 import { generateToken } from "../utils/generateToken";
 import { normalizeEmail } from "../utils/validators";
+
+interface RegisterInput {
+  fullName: string;
+  email: string;
+  password: string;
+  username?: string;
+  phoneNumber?: string;
+}
 
 const publicUser = (user: User) => {
   const { password, ...safeUser } = user;
@@ -17,7 +24,51 @@ const publicUser = (user: User) => {
 
 export class AuthService {
   private readonly users = new UserRepository();
-  private readonly tempUsers = new TempUserRepository();
+
+  async register(input: RegisterInput) {
+    if (!input.email || !input.password || !input.fullName) {
+      throw new AppError(400, "Email, password, and full name are required");
+    }
+
+    // Normalize email
+    const normalizedEmail = normalizeEmail(input.email);
+
+    // Check if email already exists
+    const existingUser = await this.users.findByEmail(normalizedEmail);
+    if (existingUser) {
+      throw new AppError(409, "Email is already registered");
+    }
+
+    // Check if username exists (if provided)
+    if (input.username) {
+      const existingUsername = await this.users.findByUsername(input.username);
+      if (existingUsername) {
+        throw new AppError(409, "Username is already taken");
+      }
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(input.password, 10);
+
+    // Create user directly
+    const user = await this.users.create({
+      fullName: input.fullName,
+      username: input.username && input.username.trim() ? input.username : null,
+      email: normalizedEmail,
+      password: hashedPassword,
+      phoneNumber: input.phoneNumber || null,
+      role: "Citizen",
+    });
+
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.userId,
+      email: user.email,
+      role: user.role,
+    });
+
+    return { token, user: publicUser(user) };
+  }
 
   async login(input: LoginInput) {
     if (!input.email || !input.password) {
@@ -62,49 +113,6 @@ export class AuthService {
     if (!user) {
       throw new AppError(404, "User not found");
     }
-
-    return user;
-  }
-
-  /**
-   * Create account from verified temporary user record
-   * Moves user from temp_users to users table
-   */
-  async createAccountFromTempUser(tempUserId: number): Promise<User> {
-    // Get temp user record
-    const tempUser = await this.tempUsers.findById(tempUserId);
-    if (!tempUser) {
-      throw new AppError(404, "Registration session not found");
-    }
-
-    // Check if email already exists in users table
-    const existingUser = await this.users.findByEmail(tempUser.email);
-    if (existingUser) {
-      // Clean up temp user record
-      await this.tempUsers.delete(tempUserId);
-      throw new AppError(409, "Email is already registered");
-    }
-
-    // Check if username exists (if provided)
-    if (tempUser.username && tempUser.username.trim()) {
-      const existingUsername = await this.users.findByUsername(tempUser.username);
-      if (existingUsername) {
-        throw new AppError(409, "Username is already taken");
-      }
-    }
-
-    // Create user in users table
-    const user = await this.users.create({
-      fullName: tempUser.fullName,
-      username: tempUser.username && tempUser.username.trim() ? tempUser.username : null,
-      email: normalizeEmail(tempUser.email),
-      password: tempUser.password,
-      phoneNumber: null,
-      role: "Citizen",
-    });
-
-    // Delete temp user record after successful creation
-    await this.tempUsers.delete(tempUserId);
 
     return user;
   }
