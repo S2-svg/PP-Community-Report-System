@@ -7,7 +7,7 @@ import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 /**
- * Validation rules for user registration step 1
+ * Validation rules for user registration
  * - Email: required, must be valid format, normalized to lowercase
  * - Password: required, 8-128 chars, must contain uppercase, lowercase, and number
  * - Full Name: required, non-empty string
@@ -48,36 +48,6 @@ export const registerValidationRules = () => {
       .trim()
       .notEmpty()
       .withMessage('Phone number cannot be empty if provided'),
-  ];
-};
-
-/**
- * Validation rules for OTP verification
- * - tempUserId: required, must be a number
- * - otpCode: required, must be exactly 6 digits
- */
-export const otpVerificationRules = () => {
-  return [
-    body('tempUserId')
-      .isInt({ min: 1 })
-      .withMessage('Invalid temp user ID'),
-    
-    body('otpCode')
-      .trim()
-      .matches(/^\d{6}$/)
-      .withMessage('OTP must be a 6-digit number'),
-  ];
-};
-
-/**
- * Validation rules for OTP resend
- * - tempUserId: required, must be a number
- */
-export const resendOtpRules = () => {
-  return [
-    body('tempUserId')
-      .isInt({ min: 1 })
-      .withMessage('Invalid temp user ID'),
   ];
 };
 
